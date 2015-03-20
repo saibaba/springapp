@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import springapp.domain.Product;
+import springapp.repository.InMemoryProductDao;
+import springapp.repository.ProductDao;
 
 public class SimpleProductManagerTests extends TestCase {
 
@@ -37,11 +39,13 @@ public class SimpleProductManagerTests extends TestCase {
         product.setPrice(TABLE_PRICE);
         products.add(product);
        
-        productManager.setProducts(products);
+        ProductDao productDao = new InMemoryProductDao(products);
+        productManager.setProductDao(productDao);
     }
 
     public void testGetProductsWithNoProducts() {
         productManager = new SimpleProductManager();
+        productManager.setProductDao(new InMemoryProductDao(null));
         assertNull(productManager.getProducts());
     }
 
@@ -62,6 +66,7 @@ public class SimpleProductManagerTests extends TestCase {
     public void testIncreasePriceWithNullListOfProducts() {
         try {
             productManager = new SimpleProductManager();
+            productManager.setProductDao(new InMemoryProductDao(null));
             productManager.increasePrice(POSITIVE_PRICE_INCREASE);
                                                 }
         catch(NullPointerException ex) {
@@ -72,7 +77,7 @@ public class SimpleProductManagerTests extends TestCase {
     public void testIncreasePriceWithEmptyListOfProducts() {
         try {
             productManager = new SimpleProductManager();
-            productManager.setProducts(new ArrayList<Product>());
+            productManager.setProductDao(new InMemoryProductDao(new ArrayList<Product>()));
             productManager.increasePrice(POSITIVE_PRICE_INCREASE);
         }
         catch(Exception ex) {
